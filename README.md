@@ -1,6 +1,6 @@
 # IGU-FitnessTracker
 
-Práctica final realizada para la asignatura de Interfaces Gráficas de Usuario, 3º de Ingeniería informática en la Universidad de Salamanca. Software realizado con WPF y Visual Studio 2022 Community.
+Práctica final realizada para la asignatura de Interfaces Gráficas de Usuario, 3º de Ingeniería informática en la Universidad de Salamanca. Software realizado con WPF y Visual Studio Community 2022.
 
 En el repositorio se encuentra la solución, el enunciado de la práctica y la memoria a realizar.
 
