@@ -1,0 +1,59 @@
+﻿<Window x:Class="GPM_IGU_PracticaFinal.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GPM_IGU_PracticaFinal"
+        mc:Ignorable="d"
+        Title="IGU Fitness Tracker" Height="550" Width="800" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6">
+
+    <DockPanel>
+        <TabControl >
+            <TabItem Name="Tab_Exercises" Background="#a8aeb3" Header="Ejercicios" >
+                <Grid Background="#a8aeb3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="Add_Ex_Button" Content="Ejercicios predeterminados" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="1" Grid.Column="0" Height="25" VerticalAlignment="Bottom" ToolTipService.ToolTip="Mostrar preseleccion ejercicios" Click="Add_Examples_Button_Click"/>
+                    <Button x:Name="Add_Button" Content="Añadir" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="1" Grid.Column="1" Height="25" VerticalAlignment="Bottom" Click="Add_Button_Click"/>
+                    <Button x:Name="Delete_Button" Content="Borrar" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="1" Grid.Column="2" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Delete_Button_Click"/>
+                    <Button x:Name="Modify_Button" Content="Modificar" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="1" Grid.Column="3" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Modify_Button_Click"/>
+
+                    <ListView x:Name="TableExercises" Margin="15" Grid.Row="0" Grid.ColumnSpan="5" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="NOMBRE" Width="190" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="DESCRIPCION" Width="380" DisplayMemberBinding="{Binding Description}"/>
+                                <GridViewColumn Header="GRUPOS MUSCULARES" Width="190" DisplayMemberBinding="{Binding Muscle_groups}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Name="Tab_Daily_Insight" Background="#a8aeb3" Header="Daily Insight" >
+                <Grid Background="#a8aeb3">
+                  
+                    <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Margin="15">
+                        <Canvas x:Name="MyCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff" Margin="10">
+                            <Canvas.RenderTransform>
+                                <TransformGroup>
+                                    <TranslateTransform x:Name="tt"/>
+                                    <ScaleTransform x:Name="sc"/>
+                                </TransformGroup>
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </ScrollViewer>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

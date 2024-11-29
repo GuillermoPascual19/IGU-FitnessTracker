@@ -1,0 +1,74 @@
+﻿<Window x:Class="GPM_IGU_PracticaFinal.SecondaryExecutions"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GPM_IGU_PracticaFinal"
+        mc:Ignorable="d"
+        Title="IGU Fitness Tracker" Height="450" Width="800" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6">
+    <DockPanel>
+        <TabControl >
+            <TabItem Name="Tab_Executions" Background="#a8aeb3" Header="Ejecuciones" >
+                <Grid Background="#a8aeb3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="Add_4Exec_Button" Content="Añadir 4 ejecuciones" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="0" Height="25" VerticalAlignment="Bottom" Click="Add_4Exec_Button_Click"/>
+                    <Button x:Name="Add_Button" Content="Añadir" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="1" Height="25" VerticalAlignment="Bottom" Click="Add_Button_Click"/>
+                    <Button x:Name="Delete_Button" Content="Borrar" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="2" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Delete_Button_Click"/>
+                    <Button x:Name="Modify_Button" Content="Modificar" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="3" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Modify_Button_Click"/>
+
+                    <ListView x:Name="TableExecutions" Margin="20" Grid.Row="0" Grid.ColumnSpan="5" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Repetiones" Width="250" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Peso" Width="250" DisplayMemberBinding="{Binding Description}"/>
+                                <GridViewColumn Header="Fecha y Hora" Width="250" DisplayMemberBinding="{Binding Muscle_groups}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Name="Tab_Graphic" Background="#a8aeb3" Header="Gráfico" >
+                <Grid Background="#a8aeb3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition />
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="PrevDay_Button" Content="Día previo" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="1" />
+                    <Button x:Name="Today_Button" Content="Hoy" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="2" />
+                    <Button x:Name="NextDay_Button" Content="Día posterior" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="3" />
+
+                    <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+                        <Canvas x:Name="MyCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff">
+                            <Canvas.RenderTransform>
+                                <TransformGroup>
+                                    <TranslateTransform x:Name="tt"/>
+                                    <ScaleTransform x:Name="sc"/>
+                                </TransformGroup>
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </ScrollViewer>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
