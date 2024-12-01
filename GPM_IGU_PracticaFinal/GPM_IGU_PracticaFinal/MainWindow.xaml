@@ -42,7 +42,7 @@
                 <Grid Background="#a8aeb3">
                   
                     <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Margin="15">
-                        <Canvas x:Name="MyCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff" Margin="10">
+                        <Canvas x:Name="graphicCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff" Margin="10">
                             <Canvas.RenderTransform>
                                 <TransformGroup>
                                     <TranslateTransform x:Name="tt"/>

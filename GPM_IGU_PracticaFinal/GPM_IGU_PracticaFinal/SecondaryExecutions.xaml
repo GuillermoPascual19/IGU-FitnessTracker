@@ -57,7 +57,7 @@
                     <Button x:Name="NextDay_Button" Content="Día posterior" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="3" />
 
                     <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-                        <Canvas x:Name="MyCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff">
+                        <Canvas x:Name="graphicCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff">
                             <Canvas.RenderTransform>
                                 <TransformGroup>
                                     <TranslateTransform x:Name="tt"/>

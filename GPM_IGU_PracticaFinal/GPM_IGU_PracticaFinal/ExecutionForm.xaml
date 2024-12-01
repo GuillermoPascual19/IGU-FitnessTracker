@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GPM_IGU_PracticaFinal"
         mc:Ignorable="d"
-        Title="IGU Fitness Tracker" Height="600" Width="500" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6">
+        Title="IGU Fitness Tracker" Height="400" Width="500" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6">
     <Grid Background="#a8aeb3">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
-            <RowDefinition Height="200"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -32,21 +32,19 @@
         <TextBox x:Name="weightExecution_TextBox" FontSize="11" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Height="20" Width="200" HorizontalAlignment="Center" />
 
         <Label Content="Fecha:" FontSize="11" Grid.Row="3" Grid.Column="1" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
-        <DatePicker Name="datePicker" SelectedDateChanged="datePicker_SelectedDateChanged" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center"></DatePicker>
+        <DatePicker Name="datePicker" SelectedDateChanged="datePicker_SelectedDateChanged" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" Height="25"></DatePicker>
 
         <Label Content="Hora:" FontSize="11" Grid.Row="4" Grid.Column="1" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
         <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
-            <TextBox x:Name="Hours" FontSize="11" Grid.Row="4" Grid.Column="2" Margin="5,0,80,45" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
-            <TextBox x:Name="Minutes" FontSize="11" Grid.Row="4" Grid.Column="2" Margin="5,45,80,5" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
-            <Label x:Name="HourPlus_Button" Content="+" Margin="145,0,80,45" Grid.Row="5" Grid.Column="3" Height="10" Width="20" VerticalAlignment="Center" Background="White" HorizontalAlignment="Center" MouseDown="HourPlus_Button_Click"/>
-            <Label x:Name="HourMinus_Button" Content="-" Margin="145,0,80,45" Grid.Row="5" Grid.Column="3" Height="10" VerticalAlignment="Center" Background="White"  HorizontalAlignment="Center" MouseDown="HourMinus_Button_Click"/>
-
-            <Label x:Name="MinutePlus_Button" Content="+" Margin="5,45,80,5" Grid.Row="5" Height="10" VerticalAlignment="Center" HorizontalAlignment="Center" MouseDown="MinutePlus_Button_Click"/>
-            <Label x:Name="MinuteMinus_Button" Content="-" Margin="5,45,80,5" Height="10" VerticalAlignment="Center" HorizontalAlignment="Center" MouseDown="MinuteMinus_Button_Click"/>
-
+            <TextBox x:Name="Hours" FontSize="11"  Margin="20,0,140,50" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
+            <TextBox x:Name="Minutes" FontSize="11" Margin="20,40,140,0" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
+            <Slider x:Name="HourSlider" Height="20" Width="60" Margin="50,0,0,45" VerticalAlignment="Center" Minimum="0" Maximum="23" ValueChanged="HourSlider_ValueChanged"/>
+            <Slider x:Name="MinuteSlider" Height="20" Width="60" Margin="60,45,10,5" VerticalAlignment="Center" Minimum="0" Maximum="59" ValueChanged="MinuteSlider_ValueChanged"/>
+            
         </Grid>
        
         <Button x:Name="Add_Button" Content="Aceptar" Background="#b2f49f" Margin="10"  Grid.Row="5" BorderBrush="DarkSeaGreen"  Grid.Column="1" Height="20" VerticalAlignment="Bottom" Click="Add_Button_Click" IsEnabled="False"/>
         <Button x:Name="Cancel_Button" Content="Cancelar" Background="#f68779" Margin="10" Grid.Row="5" Grid.Column="3" Height="20" VerticalAlignment="Bottom" Click="Cancel_Button_Click"/>
+        
     </Grid>
 </Window>
