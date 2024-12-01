@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,6 +28,8 @@ namespace GPM_IGU_PracticaFinal
         public MainWindow()
         {
             InitializeComponent();
+            
+            DrawAxis();
         }
 
         private void Add_Examples_Button_Click(object sender, RoutedEventArgs e)
@@ -113,17 +117,17 @@ namespace GPM_IGU_PracticaFinal
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            string name, description;
-            string muscleName;
+            //string name, description;
+            //string muscleName;
 
-            MusclesGroups groups;
-            Exercises exercises;
+            //MusclesGroups groups;
+            //Exercises exercises;
 
-            if(TableExercises.SelectedItem != null)
-            {
-                //name = 
-                
-            }
+            //if (TableExercises.SelectedItem != null)
+            //{
+            //    //name = 
+
+            //}
 
         }
 
@@ -135,6 +139,107 @@ namespace GPM_IGU_PracticaFinal
         private void Modify_Button_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        //private void TableExercises_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TableExercises_SelectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (Exercises ex in e.NewItems)
+                {
+                    if (ex != null)
+                    {
+                        ex.PropertyChanged += EX_PropertyChanged();
+                        foreach (Executions exec in ex.ListExecution)
+                        {
+                            exec.PropertyChanged += EX_PropertyChanged();
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                Add_Button.IsEnabled = false;
+                Delete_Button.IsEnabled = false;
+                Modify_Button.IsEnabled = false;
+            }
+        }
+
+        private void EX_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Name":
+                case "Description":
+                case "ListMuscles":
+                case "ListExecution":
+                    DrawAxis();
+                    DrawGraphic();
+                    break;
+            }
+        }
+
+        private void DrawGraphic()
+        {
+            //distance between rectangles
+            double distanceRect = 20;
+            double maxHeigth = graphicCanvas.Height;
+            int maxExecutions = exercisesList.Max(x => x.ListExecution.Count);
+
+            if (exercisesList != null && exercisesList.Count > 0)
+            {
+                foreach(Exercises ex in exercisesList)
+                {
+                    ex.ReorderDate();
+                    if (ex.ListExecution != null && ex.ListExecution.Count > 0)
+                    {
+                        foreach (Executions exec in ex.ListExecution)
+                        {
+                            Rectangle r = new Rectangle();
+                            r.Width = 10;
+                            r.Height = exec.Reps * maxHeigth / maxExecutions;
+                            r.Fill = Brushes.Red;
+                            Canvas.SetLeft(r, distanceRect);
+                            Canvas.SetTop(r, distanceRect);
+                            graphicCanvas.Children.Add(r);
+                            distanceRect += 10;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawAxis()
+        {
+            Line ejeX;
+            Line ejeY;
+            double width = 0;
+            double height = 0;
+
+            width = graphicCanvas.ActualWidth;
+            height = graphicCanvas.ActualHeight;
+
+            graphicCanvas.Children.Clear();
+
+            ejeX = new Line();
+            ejeX.Stroke = Brushes.Black;
+            ejeX.StrokeThickness = 2;
+            ejeX.X1 = 0;
+            ejeX.Y1 = 20;
+            ejeX.X2 = width - 20;
+            ejeX.Y2 = 20;
+            graphicCanvas.Children.Add(ejeX);
+
+            ejeY = new Line();
+            ejeY.Stroke = Brushes.Black;
+            ejeY.StrokeThickness = 2;
+            ejeY.X1 = 20;
+            ejeY.Y1 = 0;
+            ejeY.X2 = 20;
+            ejeY.Y2 = height - 20;
+            graphicCanvas.Children.Add(ejeY);
         }
     }
 }
