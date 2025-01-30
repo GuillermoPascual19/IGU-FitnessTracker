@@ -15,5 +15,5 @@ C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\GPM
 C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\GPM_IGU_PracticaFinal.pdb
 C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\SecondaryExecutions.g.cs
 C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\SecondaryExecutions.baml
-C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\ExecutionForm.g.cs
 C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\ExersiceDataWindow.g.cs
+C:\Users\guill\Desktop\GPM_IGU_PracticaFinal\GPM_IGU_PracticaFinal\obj\Debug\ExersiceDataWindow.baml

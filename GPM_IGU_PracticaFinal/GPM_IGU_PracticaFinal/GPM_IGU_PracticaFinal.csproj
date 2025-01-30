@@ -55,19 +55,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ExecutionForm.xaml.cs">
-      <DependentUpon>ExecutionForm.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="DataWindows.cs" />
     <Compile Include="ExersiceDataWindow.xaml.cs">
       <DependentUpon>ExersiceDataWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SecondaryExecutions.xaml.cs">
       <DependentUpon>SecondaryExecutions.xaml</DependentUpon>
     </Compile>
-    <Page Include="ExecutionForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ExersiceDataWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

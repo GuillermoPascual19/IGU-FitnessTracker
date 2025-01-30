@@ -22,6 +22,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
+        <Label Content="Formulario de ejercicios" FontSize="21" FontWeight="Black"  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
         <Label Content="Nombre:" FontSize="11" Grid.Row="1" Grid.Column="1" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
         <TextBox x:Name="nameExercise_TextBox" FontSize="11" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Height="20" Width="200" HorizontalAlignment="Center"/>
 
@@ -29,7 +31,7 @@
         <TextBox x:Name="descriptionExercise_TextBox" FontSize="11" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Height="20" Width="200" HorizontalAlignment="Center" />
 
         <Label Content="Grupo muscular:" FontSize="11" Grid.Row="3" Grid.Column="1" Margin="5,0,5,5" VerticalAlignment="Center" HorizontalContentAlignment="Left"/>
-        <ComboBox x:Name="NombElec" Grid.Row="3" FontSize="11" Grid.Column="2" Grid.ColumnSpan="2" Height="20" Width="200" HorizontalAlignment="Center" SelectionChanged="NombElec_SelectionChanged" >
+        <ComboBox x:Name="MuscleNameComboBox" Grid.Row="3" FontSize="11" Grid.Column="2" Grid.ColumnSpan="2" Height="20" Width="200" HorizontalAlignment="Center"  >
             <ComboBoxItem>Core</ComboBoxItem>
             <ComboBoxItem>Brazos</ComboBoxItem>
             <ComboBoxItem>Pecho</ComboBoxItem>

@@ -37,7 +37,7 @@ namespace GPM_IGU_PracticaFinal
 
         public override string ToString()
         {
-            return date.Day.ToString() + " " + date.Month.ToString() + " " + date.Year.ToString() + ',' + date.Hour.ToString() + " " + date.Minute.ToString();
+            return date.Day.ToString() + " " + date.Month.ToString() + " " + date.Year.ToString();
         }
     }
 }

@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GPM_IGU_PracticaFinal"
         mc:Ignorable="d"
-        Title="IGU Fitness Tracker" Height="450" Width="800" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6">
+        Title="IGU Fitness Tracker" Height="450" Width="800" Icon="/Items/fitness_icon.png"  Background="#d8dfe6" >
     <DockPanel>
         <TabControl >
             <TabItem Name="Tab_Executions" Background="#a8aeb3" Header="Ejecuciones" >
                 <Grid Background="#a8aeb3">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -21,51 +21,105 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Button x:Name="Add_4Exec_Button" Content="Añadir 4 ejecuciones" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="0" Height="25" VerticalAlignment="Bottom" Click="Add_4Exec_Button_Click"/>
-                    <Button x:Name="Add_Button" Content="Añadir" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="1" Height="25" VerticalAlignment="Bottom" Click="Add_Button_Click"/>
-                    <Button x:Name="Delete_Button" Content="Borrar" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="2" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Delete_Button_Click"/>
-                    <Button x:Name="Modify_Button" Content="Modificar" Background="#f0f8ff" Margin="20" BorderThickness="3" Grid.Row="1" Grid.Column="3" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Modify_Button_Click"/>
+                    <Button x:Name="Add_4Exec_Button" Content="Añadir 4 ejecuciones" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="0" Height="25" VerticalAlignment="Top" Click="Add_4Exec_Button_Click"/>
+                    <Button x:Name="Add_Button" Content="Añadir" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="1" Height="25" VerticalAlignment="Top" Click="Add_Button_Click"/>
+                    <Button x:Name="Delete_Button" Content="Borrar" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="2" Height="25"  IsEnabled="False" VerticalAlignment="Top" Click="Delete_Button_Click"/>
+                    <Button x:Name="Modify_Button" Content="Modificar" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="3" Height="25"  IsEnabled="False" VerticalAlignment="Top" Click="Modify_Button_Click"/>
 
-                    <ListView x:Name="TableExecutions" Margin="20" Grid.Row="0" Grid.ColumnSpan="5" >
+                    <ListView x:Name="TableExecutions" Margin="10,10,10,0" Grid.Row="0" Grid.ColumnSpan="4">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Repetiones" Width="250" DisplayMemberBinding="{Binding Name}"/>
-                                <GridViewColumn Header="Peso" Width="250" DisplayMemberBinding="{Binding Description}"/>
-                                <GridViewColumn Header="Fecha y Hora" Width="250" DisplayMemberBinding="{Binding Muscle_groups}"/>
+                                <GridViewColumn Header="Repetiones" Width="250" DisplayMemberBinding="{Binding Reps}"/>
+                                <GridViewColumn Header="Peso" Width="250" DisplayMemberBinding="{Binding Weight}"/>
+                                <GridViewColumn Header="Fecha y Hora" Width="250" DisplayMemberBinding="{Binding Date}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </Grid>
             </TabItem>
             <TabItem Name="Tab_Graphic" Background="#a8aeb3" Header="Gráfico" >
+                <Grid Width="770" Height="380">
+                    <ScrollViewer x:Name="scroll" 
+                                    HorizontalScrollBarVisibility="Hidden" 
+                                    VerticalScrollBarVisibility="Hidden" 
+                                    Width="770" Height="380">
+                        <Canvas x:Name="graphicCanvas"  Background="#f0f8ff">
+                            <Canvas.LayoutTransform>
+                                <TransformGroup>
+                                    <ScaleTransform x:Name="sc"  ScaleX="1" ScaleY="1"/>
+                                    <TranslateTransform x:Name="tt" Y="0"/>
+                                </TransformGroup>
+                            </Canvas.LayoutTransform>
+                        </Canvas>
+                    </ScrollViewer>
+                    <!--<Canvas x:Name="graphicCanvas"  Background="#f0f8ff"/>-->
+                </Grid>
+                
+
+            </TabItem>
+            <TabItem Name="Tab_ExecutionForm" Background="#a8aeb3" Header="Entrada de datos">
                 <Grid Background="#a8aeb3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
-                        <RowDefinition />
-                        <RowDefinition Height="50"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition Height="140"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="60"/>
+
                     </Grid.ColumnDefinitions>
 
-                    <Button x:Name="PrevDay_Button" Content="Día previo" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="1" />
-                    <Button x:Name="Today_Button" Content="Hoy" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="2" />
-                    <Button x:Name="NextDay_Button" Content="Día posterior" Background="#f0f8ff" Margin="10,12,10,12" BorderThickness="3" Grid.Row="0" Grid.Column="3" />
+                    <Label Content="Formulario de ejecuciones" FontSize="21" FontWeight="Black" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="38"/>
 
-                    <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-                        <Canvas x:Name="graphicCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff">
-                            <Canvas.RenderTransform>
-                                <TransformGroup>
-                                    <TranslateTransform x:Name="tt"/>
-                                    <ScaleTransform x:Name="sc"/>
-                                </TransformGroup>
-                            </Canvas.RenderTransform>
-                        </Canvas>
-                    </ScrollViewer>
+                    <Label Content="Ejercicio seleccionado:" FontSize="11" Grid.Row="1" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="24"/>
+                    <TextBox x:Name="ExerciseName_TextBox" FontSize="11" Grid.Row="1" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center" Margin="10"/>
+
+                    <Label Content="Repeticiones:" FontSize="11" Grid.Row="2" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="25"/>
+                    <TextBox x:Name="repsExecution_TextBox" FontSize="11" Grid.Row="2" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center" />
+
+                    <Label Content="Peso:" FontSize="11" Grid.Row="3" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="24"/>
+                    <TextBox x:Name="weightExecution_TextBox" FontSize="11" Grid.Row="3" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center"  />
+
+                    <Label Content="Fecha:" FontSize="11" Grid.Row="4" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="25"/>
+                    <!--<DatePicker Name="datePicker" SelectedDateChanged="datePicker_SelectedDateChanged" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" Height="25"></DatePicker>-->
+
+                    <Grid Grid.Row="4" Grid.Column="2" Margin="0,0,0,0" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="20"/>
+                        </Grid.RowDefinitions>
+                        <TextBox x:Name="dateExecution_TextBox" Grid.Row="1" FontSize="11" Width="90" Height="20" HorizontalAlignment="Center" />
+                        <Viewbox Grid.Row="0">
+                            <Calendar x:Name="calend" DisplayMode="Year" FontSize="11" SelectedDatesChanged="calend_SelectedDatesChanged" >
+                                <Calendar.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0.5" EndPoint="1,1">
+                                        <GradientStop Color="#E8E4D6" Offset="0.2"/>
+                                        <GradientStop Color="#E1DACA" Offset="0.4"/>
+                                        <GradientStop Color="#D8CFBE" Offset="0.6"/>
+                                        <GradientStop Color="#D1C9BA" Offset="0.8"/>
+                                        <GradientStop Color="AntiqueWhite" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Calendar.Background>
+                                <Calendar.BorderBrush>
+                                    <LinearGradientBrush StartPoint="0.5,0.5" EndPoint="1,1">
+                                        <GradientStop Color="#E8E4D6" Offset="0.2"/>
+                                        <GradientStop Color="#E1DACA" Offset="0.4"/>
+                                        <GradientStop Color="#D8CFBE" Offset="0.6"/>
+                                        <GradientStop Color="#D1C9BA" Offset="0.8"/>
+                                        <GradientStop Color="AntiqueWhite" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Calendar.BorderBrush>
+                            </Calendar>
+                        </Viewbox>
+                    </Grid>
+                    <Button x:Name="Acept_FormExec_Button" Content="Aceptar" Background="#b2f49f" Margin="5,0,5,0"  Grid.Row="5" BorderBrush="DarkSeaGreen" Width="120"  Grid.Column="1" Height="20" VerticalAlignment="Center" Click="Acept_FormExec_Button_Click" IsEnabled="False"/>
+                    <Button x:Name="Cancel_Button" Content="Cancelar" Background="#f68779" Margin="5,0,5,0" Grid.Row="5" Width="120" Grid.Column="2" Height="20" VerticalAlignment="Center" Click="Cancel_Button_Click"/>
 
                 </Grid>
             </TabItem>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GPM_IGU_PracticaFinal"
         mc:Ignorable="d"
-        Title="IGU Fitness Tracker" Height="550" Width="800" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6">
+        Title="IGU Fitness Tracker" Height="550" Width="800" Icon="/Items/fitness_icon.png" WindowStartupLocation="CenterScreen" Background="#d8dfe6" Closed="Window_Closed">
 
     <DockPanel>
         <TabControl >
@@ -27,12 +27,12 @@
                     <Button x:Name="Delete_Button" Content="Borrar" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="1" Grid.Column="2" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Delete_Button_Click"/>
                     <Button x:Name="Modify_Button" Content="Modificar" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="1" Grid.Column="3" Height="25"  IsEnabled="False" VerticalAlignment="Bottom" Click="Modify_Button_Click"/>
 
-                    <ListView x:Name="TableExercises" Margin="15" Grid.Row="0" Grid.ColumnSpan="5" >
+                    <ListView x:Name="ExercisesTable" Margin="15" Grid.Row="0" Grid.ColumnSpan="5" SelectionChanged="ExercisesTable_SelectionChanged">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="NOMBRE" Width="190" DisplayMemberBinding="{Binding Name}"/>
-                                <GridViewColumn Header="DESCRIPCION" Width="380" DisplayMemberBinding="{Binding Description}"/>
-                                <GridViewColumn Header="GRUPOS MUSCULARES" Width="190" DisplayMemberBinding="{Binding Muscle_groups}"/>
+                                <GridViewColumn Header="NOMBRE" Width="120" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="DESCRIPCION" Width="460" DisplayMemberBinding="{Binding Description}"/>
+                                <GridViewColumn Header="GRUPOS MUSCULARES" Width="180" DisplayMemberBinding="{Binding MuscleGroup}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -40,17 +40,25 @@
             </TabItem>
             <TabItem Name="Tab_Daily_Insight" Background="#a8aeb3" Header="Daily Insight" >
                 <Grid Background="#a8aeb3">
-                  
-                    <ScrollViewer x:Name="scroll" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" Margin="15">
-                        <Canvas x:Name="graphicCanvas" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"  Background="#f0f8ff" Margin="10">
-                            <Canvas.RenderTransform>
-                                <TransformGroup>
-                                    <TranslateTransform x:Name="tt"/>
-                                    <ScaleTransform x:Name="sc"/>
-                                </TransformGroup>
-                            </Canvas.RenderTransform>
-                        </Canvas>
-                    </ScrollViewer>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="PrevDay_Button" Content="Día previo" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="0" Grid.Column="1" Height="30" Width="120"/>
+                    <Button x:Name="Today_Button" Content="Hoy" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="0" Grid.Column="2" Width="120" Height="30"/>
+                    <Button x:Name="NextDay_Button" Content="Día posterior" Background="#f0f8ff" Margin="10" BorderThickness="3" Grid.Row="0" Grid.Column="3" Width="120" Height="30"/>
+
+                    <Canvas x:Name="graphicCanvas" Grid.Column="1" Grid.Row="1" Width="470" Height="360"  Background="#f0f8ff"/>
+
 
                 </Grid>
             </TabItem>
