@@ -13,13 +13,14 @@ namespace GPM_IGU_PracticaFinal
         string name;
         string description;
 
-        ObservableCollection<MusclesGroups> listMuscleGroup = new ObservableCollection<MusclesGroups>();
+        string muscleGroup;
         ObservableCollection<Executions> listExecution = new ObservableCollection<Executions>();
 
-        public Exercises(string name, string description)
+        public Exercises(string name, string description, string muscleGroup)
         {
             this.name = name;
             this.description = description;
+            this.muscleGroup = muscleGroup;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -27,9 +28,8 @@ namespace GPM_IGU_PracticaFinal
         public string Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
         public string Description { get { return description; } set { description = value; OnPropertyChanged("Description"); } }
         public ObservableCollection<Executions> ListExecution { get { return listExecution; } set { listExecution = value; OnPropertyChanged("ListExecution"); } }
-        public ObservableCollection<MusclesGroups> ListMuscles { get { return listMuscleGroup; } set { listMuscleGroup = value; OnPropertyChanged("ListMuscles"); } }
+        public string MuscleGroup { get { return muscleGroup; } set { muscleGroup = value; OnPropertyChanged("MuscleGroup"); } }
 
-        
         
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -52,5 +52,30 @@ namespace GPM_IGU_PracticaFinal
                 }
             }
         }
+
+        //internal int SumReps()
+        //{
+        //    int sum = 0;
+        //    var groupExecPerDay = ListExecution
+        //                    .GroupBy(x => x.Date)
+        //                    .Select(group => new
+        //                    {
+        //                        Date = group.Key,
+        //                        Reps = group.Sum(ex => ex.Reps)
+        //                    });
+        //    return groupExecPerDay.Sum(ex => ex.Reps);
+        //    //foreach (Executions ex in ListExecution)
+        //    //{
+        //    //    foreach(Executions e in groupExecPerDay)
+        //    //    {
+        //    //        ReorderDate();
+        //    //        if(DateTime.Compare(ex.Date, e.Date)  > 0)
+        //    //            sum += e.Reps;
+        //    //    }
+                
+
+
+        //    //}
+        //}
     }
 }
