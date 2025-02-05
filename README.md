@@ -2,9 +2,9 @@
 
 Práctica final realizada para la asignatura de Interfaces Gráficas de Usuario, 3º de Ingeniería informática en la Universidad de Salamanca. Software realizado con WPF y Visual Studio Community 2022.
 
-En el repositorio se encuentra la solución, el enunciado de la práctica y la memoria a realizar.
+En el repositorio se encuentra la solución y los archivos del programa, el enunciado de la práctica, la memoria de documentación del proyecto y por último el ejecutable.
 
-La práctica consiste resumidamente en realizar un aplicación de seguimiento de la actividad fisica del usuario.
+La práctica consiste resumidamente en realizar un aplicación de seguimiento de la actividad física del usuario.
 
 " Hacer ejercicio puede parecer aburrido, pero si añadimos unos contadores de progreso y
 unas visualizaciones atractivas quizá podamos ayudarnos a lograr esos soñados
@@ -20,4 +20,7 @@ Se debe crear una aplicación que permitirá al menos:
 repeticiones, peso con el que se realiza y fecha y hora.
 - Visualizar el histórico de ejecuciones de un ejercicio, tanto en forma tabulada
 como a través de un gráfico.
-- Visualizar la cantidad de repeticiones por grupos musculares en una fecha dada "
+- Visualizar la cantidad de repeticiones por grupos musculares en una fecha dada.
+- Poder interactuar entre ventanas de manera que si seleccionamos un ejercicio en la ventana principal se cambien los datos de dicho ejercicio, es decir, sus ejecuciones o series de repeticiones."
+
+
