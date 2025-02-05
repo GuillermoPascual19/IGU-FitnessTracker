@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GPM_IGU_PracticaFinal"
         mc:Ignorable="d"
-        Title="IGU Fitness Tracker" Height="450" Width="800" Icon="/Items/fitness_icon.png"  Background="#d8dfe6" >
+        Title="IGU Fitness Tracker" Height="550" Width="800" Icon="/Items/fitness_icon.png"  Background="#d8dfe6" >
     <DockPanel>
         <TabControl >
             <TabItem Name="Tab_Executions" Background="#a8aeb3" Header="Ejecuciones" >
                 <Grid Background="#a8aeb3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -21,12 +21,11 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Button x:Name="Add_4Exec_Button" Content="Añadir 4 ejecuciones" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="0" Height="25" VerticalAlignment="Top" Click="Add_4Exec_Button_Click"/>
                     <Button x:Name="Add_Button" Content="Añadir" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="1" Height="25" VerticalAlignment="Top" Click="Add_Button_Click"/>
                     <Button x:Name="Delete_Button" Content="Borrar" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="2" Height="25"  IsEnabled="False" VerticalAlignment="Top" Click="Delete_Button_Click"/>
                     <Button x:Name="Modify_Button" Content="Modificar" Background="#f0f8ff" Margin="20,126,20,0" BorderThickness="3" Grid.Row="1" Grid.Column="3" Height="25"  IsEnabled="False" VerticalAlignment="Top" Click="Modify_Button_Click"/>
 
-                    <ListView x:Name="TableExecutions" Margin="10,10,10,0" Grid.Row="0" Grid.ColumnSpan="4">
+                    <ListView x:Name="TableExecutions" Margin="10,10,10,0" Grid.Row="0" Grid.ColumnSpan="4" SelectionChanged="TableExecutions_SelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Repetiones" Width="250" DisplayMemberBinding="{Binding Reps}"/>
@@ -38,30 +37,22 @@
                 </Grid>
             </TabItem>
             <TabItem Name="Tab_Graphic" Background="#a8aeb3" Header="Gráfico" >
-                <Grid Width="770" Height="380">
+                <Grid>
                     <ScrollViewer x:Name="scroll" 
                                     HorizontalScrollBarVisibility="Hidden" 
-                                    VerticalScrollBarVisibility="Hidden" 
-                                    Width="770" Height="380">
-                        <Canvas x:Name="graphicCanvas"  Background="#f0f8ff">
-                            <Canvas.LayoutTransform>
-                                <TransformGroup>
-                                    <ScaleTransform x:Name="sc"  ScaleX="1" ScaleY="1"/>
-                                    <TranslateTransform x:Name="tt" Y="0"/>
-                                </TransformGroup>
-                            </Canvas.LayoutTransform>
-                        </Canvas>
+                                    VerticalScrollBarVisibility="Hidden" >
+                        <Canvas x:Name="graphicCanvas"  Background="#f0f8ff" 
+                                Width="{Binding ActualWidth, ElementName=scroll}" 
+                                Height="{Binding ActualWidth, ElementName=scroll}"/>
+
                     </ScrollViewer>
-                    <!--<Canvas x:Name="graphicCanvas"  Background="#f0f8ff"/>-->
                 </Grid>
-                
 
             </TabItem>
-            <TabItem Name="Tab_ExecutionForm" Background="#a8aeb3" Header="Entrada de datos">
+            <TabItem Name="Tab_ExecutionForm" Background="#a8aeb3" Header="Entrada de datos" Visibility="Collapsed">
                 <Grid Background="#a8aeb3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
-                        <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition Height="140"/>
@@ -72,24 +63,18 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                         <ColumnDefinition Width="60"/>
-
                     </Grid.ColumnDefinitions>
 
                     <Label Content="Formulario de ejecuciones" FontSize="21" FontWeight="Black" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalContentAlignment="Center" Height="38"/>
 
-                    <Label Content="Ejercicio seleccionado:" FontSize="11" Grid.Row="1" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="24"/>
-                    <TextBox x:Name="ExerciseName_TextBox" FontSize="11" Grid.Row="1" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center" Margin="10"/>
+                    <Label Content="Repeticiones:" FontSize="11" Grid.Row="1" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="25"/>
+                    <TextBox x:Name="repsExecution_TextBox" FontSize="11" Grid.Row="1" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center" />
 
-                    <Label Content="Repeticiones:" FontSize="11" Grid.Row="2" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="25"/>
-                    <TextBox x:Name="repsExecution_TextBox" FontSize="11" Grid.Row="2" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center" />
+                    <Label Content="Peso:" FontSize="11" Grid.Row="2" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="24"/>
+                    <TextBox x:Name="weightExecution_TextBox" FontSize="11" Grid.Row="2" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center"  />
 
-                    <Label Content="Peso:" FontSize="11" Grid.Row="3" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="24"/>
-                    <TextBox x:Name="weightExecution_TextBox" FontSize="11" Grid.Row="3" Grid.Column="2" Height="20" Width="200" HorizontalAlignment="Center"  />
-
-                    <Label Content="Fecha:" FontSize="11" Grid.Row="4" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="25"/>
-                    <!--<DatePicker Name="datePicker" SelectedDateChanged="datePicker_SelectedDateChanged" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Center" Height="25"></DatePicker>-->
-
-                    <Grid Grid.Row="4" Grid.Column="2" Margin="0,0,0,0" >
+                    <Label Content="Fecha:" FontSize="11" Grid.Row="3" Grid.Column="1" Margin="50,0,2,0" VerticalAlignment="Center" HorizontalContentAlignment="Left" Height="25"/>
+                    <Grid Grid.Row="3" Grid.Column="2" Margin="0,0,0,0" >
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="20"/>
@@ -118,6 +103,7 @@
                             </Calendar>
                         </Viewbox>
                     </Grid>
+                    
                     <Button x:Name="Acept_FormExec_Button" Content="Aceptar" Background="#b2f49f" Margin="5,0,5,0"  Grid.Row="5" BorderBrush="DarkSeaGreen" Width="120"  Grid.Column="1" Height="20" VerticalAlignment="Center" Click="Acept_FormExec_Button_Click" IsEnabled="False"/>
                     <Button x:Name="Cancel_Button" Content="Cancelar" Background="#f68779" Margin="5,0,5,0" Grid.Row="5" Width="120" Grid.Column="2" Height="20" VerticalAlignment="Center" Click="Cancel_Button_Click"/>
 

@@ -29,7 +29,6 @@ namespace GPM_IGU_PracticaFinal
         public string Description { get { return description; } set { description = value; OnPropertyChanged("Description"); } }
         public ObservableCollection<Executions> ListExecution { get { return listExecution; } set { listExecution = value; OnPropertyChanged("ListExecution"); } }
         public string MuscleGroup { get { return muscleGroup; } set { muscleGroup = value; OnPropertyChanged("MuscleGroup"); } }
-
         
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -52,30 +51,5 @@ namespace GPM_IGU_PracticaFinal
                 }
             }
         }
-
-        //internal int SumReps()
-        //{
-        //    int sum = 0;
-        //    var groupExecPerDay = ListExecution
-        //                    .GroupBy(x => x.Date)
-        //                    .Select(group => new
-        //                    {
-        //                        Date = group.Key,
-        //                        Reps = group.Sum(ex => ex.Reps)
-        //                    });
-        //    return groupExecPerDay.Sum(ex => ex.Reps);
-        //    //foreach (Executions ex in ListExecution)
-        //    //{
-        //    //    foreach(Executions e in groupExecPerDay)
-        //    //    {
-        //    //        ReorderDate();
-        //    //        if(DateTime.Compare(ex.Date, e.Date)  > 0)
-        //    //            sum += e.Reps;
-        //    //    }
-                
-
-
-        //    //}
-        //}
     }
 }

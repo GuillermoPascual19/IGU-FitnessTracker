@@ -13,21 +13,20 @@ namespace GPM_IGU_PracticaFinal
     public class Executions : INotifyPropertyChanged
     {
         int reps;
-        int weight;
+        double weight;
         DateTime date;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Executions(int reps, int weight, DateTime date)
+        public Executions(int reps, double weight, DateTime date)
         {
             this.reps = reps;
             this.weight = weight;
             this.date = date;
         }
 
-
         public int Reps { get { return reps; } set { reps = value; OnPropertyChanged("Reps"); } }
-        public int Weight { get { return weight; } set { weight = value; OnPropertyChanged("Weight"); } }
+        public double Weight { get { return weight; } set { weight = value; OnPropertyChanged("Weight"); } }
         public DateTime Date { get { return date; } set { date = value; OnPropertyChanged("Date"); } }
 
         protected virtual void OnPropertyChanged(string propertyName)

@@ -23,12 +23,12 @@ namespace GPM_IGU_PracticaFinal
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
     /// 
-    public class SelectionChangeEventArgs : EventArgs
+    public class selectionExChangeEventArgs : EventArgs
     {
-        public Exercises SelectedExercise { get; }
-        public SelectionChangeEventArgs(Exercises selectedExercise)
+        public Exercises selectedex { get; }
+        public selectionExChangeEventArgs(Exercises selectedEx)
         {
-            SelectedExercise = selectedExercise;
+            selectedex = selectedEx;
         }
     }
 
@@ -36,32 +36,196 @@ namespace GPM_IGU_PracticaFinal
     {
         SecondaryExecutions sec;
         ObservableCollection<Exercises> exercisesList = new ObservableCollection<Exercises>();
-        public event EventHandler<SelectionChangeEventArgs> SelectionChanged;
-        
 
-        int cont = 0;
+        public event EventHandler<selectionExChangeEventArgs> SelectionChanged;
+
+        Exercises exe;
+
+        bool isModify = false;
 
         public MainWindow()
         {
             InitializeComponent();
 
             ExercisesTable.ItemsSource = exercisesList;
-            //SecondaryExecutions sec = new SecondaryExecutions(exercisesList);
+
             graphicCanvas.Children.Clear();
             DrawAxis();
-            DrawGraph(DateTime.Today, 0);
+            DrawGraph(DateTime.Today);
+        }
+
+        private void ExercisesTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(ExercisesTable.SelectedItem != null)
+            {
+                exe = (Exercises)ExercisesTable.SelectedItem;
+                
+                if(sec == null || !sec.IsLoaded)
+                {
+                    sec = new SecondaryExecutions(exe);
+                    sec.OnExecutionDataSelected += Sec_OnExecutionDataSelected;
+                    sec.Show();
+                }
+                else
+                {
+                    sec.UpdateData(exe);
+                    sec.Focus();
+                }
+                SelectionChanged?.Invoke(this, new selectionExChangeEventArgs(exe));
+            }
+        }
+
+        private void Sec_OnExecutionDataSelected(object sender, ExecutionDateChangedEventArgs e)
+        {
+            graphicCanvas.Children.Clear();
+            DrawAxis();
+            DrawGraph(e.date);
+        }
+
+        private void DrawAxis()
+        {
+            Line axis;
+            string[] musclegroups = { "Piernas", "Espalda", "Core", "Pecho", "Brazos" };
+
+            double centerX = (graphicCanvas.Width) / 2;
+            double centerY = (graphicCanvas.Height) / 2;
+
+            Console.WriteLine(centerX);
+            Console.WriteLine(centerY);
+
+            double radius = Math.Min(100, Math.Min(centerX, centerY) - 40);
+            //double radius = 150;
+            graphicCanvas.Children.Clear();
+
+            for (int i = 0; i < musclegroups.Length; i++)
+            {
+                double angle = (5 + i * 2 * Math.PI) / musclegroups.Length;
+                axis = new Line();
+                axis.Stroke = Brushes.Black;
+                axis.StrokeThickness = 2;
+                axis.X1 = centerX;
+                axis.Y1 = centerY;
+                axis.X2 = centerX + radius * Math.Cos(angle);
+                axis.Y2 = centerY + radius * Math.Sin(angle);
+
+                TextBlock textBlock = new TextBlock
+                {
+                    Text = musclegroups[i],
+                    FontSize = 12
+                };
+
+                Canvas.SetLeft(textBlock, centerX + (radius + 45) * Math.Cos(angle) - textBlock.ActualWidth / 2);
+                Canvas.SetTop(textBlock, centerY + (radius + 25) * Math.Sin(angle) - textBlock.ActualHeight / 2);
+
+                graphicCanvas.Children.Add(axis);
+                graphicCanvas.Children.Add(textBlock);
+            }
+        }
+
+        private void DrawGraph(DateTime date)
+        {
+            if (exercisesList.Count == 0) return;
+
+            double centerX = graphicCanvas.Width / 2;
+            double centerY = graphicCanvas.Height / 2;
+
+            double radius = Math.Min(100, Math.Min(centerX, centerY) - 30);
+
+            PointCollection points = new PointCollection();
+            Ellipse ellipse;
+            Polygon polygon;
+
+            string[] musclegroups = { "Piernas", "Espalda", "Core", "Brazos", "Pecho" };
+
+            if (date.Equals(null)) date = DateTime.Today;
+
+            var totalRepsPerMuscleGroup = exercisesList
+                .Where(ex => ex.ListExecution.Any(exec => exec.Date.Date == date.Date))
+                .GroupBy(x => x.MuscleGroup)
+                .Select(group => new
+                {
+                    MuscleGroup = group.Key,
+                    TotalReps = group
+                        .SelectMany(x => x.ListExecution)
+                        .Where(exec => exec.Date.Date == date.Date)
+                        .Sum(exec => exec.Reps)
+                }).ToList();
+
+            double maxReps = totalRepsPerMuscleGroup.Any() ? Math.Min(100, totalRepsPerMuscleGroup.Max(x => x.TotalReps)) : 0;
+            
+            for (int i = 0; i < musclegroups.Length; i++)
+            {
+                double angle = (5 + i * 2 * Math.PI) / musclegroups.Length;
+
+                var muscleReps = totalRepsPerMuscleGroup.FirstOrDefault(group => group.MuscleGroup == musclegroups[i]);
+                double reps = muscleReps != null ? Math.Min(100, muscleReps.TotalReps) : 0;
+                //Si reps supera 100 antes de ser divido por 100 (limite preestablecido) y multiplicado por el radio, el valor sobrepasara el radio del eje
+                double radius2 = ((reps / 100) * radius);
+
+                double x = (centerX + radius2 * Math.Cos(angle));
+                double y = (centerY + radius2 * Math.Sin(angle));
+                
+                ellipse = new Ellipse
+                {
+                    Width = 8,
+                    Height = 8,
+                    Fill = Brushes.Red
+                };
+                Canvas.SetLeft(ellipse, x - (ellipse.Width / 2));
+                Canvas.SetTop(ellipse, y - (ellipse.Height / 2));
+                graphicCanvas.Children.Add(ellipse);
+                ToolTip tooltip = new ToolTip()
+                {
+                    Content = $"Reps: {(muscleReps?.TotalReps ?? 0)}"
+                };
+                ellipse.ToolTip = tooltip;
+                
+                ToolTipService.SetIsEnabled(ellipse, true);
+
+                points.Add(new Point(x, y));
+            }
+
+            polygon = new Polygon
+            {
+                Points = new PointCollection(points),
+                Stroke = Brushes.DarkBlue,
+                StrokeThickness = 2,
+                Fill = new SolidColorBrush(Color.FromArgb(100, 173, 216, 230))
+            };
+            graphicCanvas.Children.Add(polygon);
+        }
+
+        private void DateSelector_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(DateSelector.SelectedDate != null)
+            {
+                Console.WriteLine(DateSelector.SelectedDate.Value);
+                graphicCanvas.Children.Clear();
+                DrawAxis();
+                DrawGraph(DateSelector.SelectedDate.Value);
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         private void Add_Examples_Button_Click(object sender, RoutedEventArgs e)
         {
             Exercises ex, ex1, ex2, ex3, ex4, ex5, ex6, ex7, ex8;
-            
+
             string name;
             string description;
             string muscleName;
 
             Executions executions;
             DateTime date;
+
+            if(exercisesList.Count > 0)
+            {
+                exercisesList.Clear();
+            }
 
             //=======================First Exercise=======================
             name = "Sentadilla";
@@ -190,7 +354,7 @@ namespace GPM_IGU_PracticaFinal
             description = "Una maquina guiada para trabajar los musculos de las piernas, especialmente los cuadriceps";
             muscleName = "Piernas";
             ex6 = new Exercises(name, description, muscleName);
-            
+
             date = new DateTime(2024, 10, 12);
             executions = new Executions(12, 100, date);
             ex6.ListExecution.Add(executions);
@@ -252,205 +416,117 @@ namespace GPM_IGU_PracticaFinal
             Modify_Button.IsEnabled = true;
 
             DrawAxis();
-            DrawGraph(DateTime.Today, 0);
+            DrawGraph(DateTime.Today);
         }
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            //ExersiceDataWindow exersiceDataWindow = new ExersiceDataWindow(exercisesList);
-            //exerciceDataWindow.ShowDialog();
-            //if(exersiceDataWindow.DialogResult == true)
-            //{
-            //    exercisesList.Add(exersiceDataWindow.newExercise);
-            //}
-            //Delete_Button.IsEnabled = true;
-            
+            AddExercise_Tab.Visibility = Visibility.Visible;
+            AddExercise_Tab.Focus();
+            ConfirmNewEx_Button.IsEnabled = true;
         }
 
         private void Delete_Button_Click(object sender, RoutedEventArgs e)
         {
-            if(ExercisesTable.SelectedItem != null)
+            if (ExercisesTable.SelectedItem != null)
             {
                 exercisesList.Remove((Exercises)ExercisesTable.SelectedItem);
+
+                if (exercisesList.Count == 0)
+                {
+                    Delete_Button.IsEnabled = false;
+                    Modify_Button.IsEnabled = false;
+                    ConfirmNewEx_Button.IsEnabled = false;
+                    sec.Close();
+                    sec = null;
+                    exercisesList.Clear();
+
+                    graphicCanvas.Children.Clear();
+                    DrawAxis();
+                    
+                    SelectionChanged?.Invoke(this, new selectionExChangeEventArgs(exe));
+
+                }
             }
         }
 
         private void Modify_Button_Click(object sender, RoutedEventArgs e)
         {
+            isModify = true;
 
-        }
-
-        private void ExercisesTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SelectionChanged?.Invoke(this, new SelectionChangeEventArgs((Exercises)ExercisesTable.SelectedItem));
-            Exercises ex = (Exercises)ExercisesTable.SelectedItem;
-            if(ExercisesTable.SelectedItem != null)
+            if (ExercisesTable.SelectedItem != null)
             {
-                if (sec == null)
-                {
-                    SecondaryExecutions sec = new SecondaryExecutions(ex);
+                Exercises ex = (Exercises)ExercisesTable.SelectedItem;
+                nameExercise_TextBox.Text = ex.Name;
+                descriptionExercise_TextBox.Text = ex.Description;
+                MuscleNameComboBox.Text = ex.MuscleGroup;
 
-                    sec.Show();
-                    sec.Focus();
-                }
-                else
-                {
-                    sec.Show();
-                }
-            }
-            
-        }
+                LabelForm.Content = "Formulario modificar ejercicio";
 
-
-        //private void EX_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        //{
-        //    switch (e.PropertyName)
-        //    {
-        //        case "Name":
-        //        case "Description":
-        //        case "ListMuscles":
-        //        case "ListExecution":
-        //            DrawAxis();
-        //            DrawGraphic();
-        //            break;
-        //    }
-        //}
-
-        private void DrawAxis()
-        {
-            Line axis;
-
-            string[] musclegroups = { "Piernas", "Espalda", "Core", "Pecho", "Brazos" };
-
-            double centerX = (graphicCanvas.Width) / 2;
-            double centerY = (graphicCanvas.Height) / 2;
-            Console.WriteLine(centerX);
-            Console.WriteLine(centerY);
-            double radius = Math.Min(centerX, centerY) - 40;
-            graphicCanvas.Children.Clear();
-
-            for (int i = 0; i < musclegroups.Length; i++)
+                AddExercise_Tab.Visibility = Visibility.Visible;
+                AddExercise_Tab.Focus();
+            }else
             {
-                double angle = (5 + i * 2 * Math.PI) / musclegroups.Length;
-                axis = new Line();
-                axis.Stroke = Brushes.Black;
-                axis.StrokeThickness = 2;
-                axis.X1 = centerX;
-                axis.Y1 = centerY;
-                axis.X2 = centerX + radius * Math.Cos(angle);
-                axis.Y2 = centerY + radius * Math.Sin(angle);
-
-                TextBlock textBlock = new TextBlock
-                {
-                    Text = musclegroups[i],
-                    FontSize = 12
-                };
-
-                Canvas.SetLeft(textBlock, centerX + (radius + 45) * Math.Cos(angle) - textBlock.ActualWidth / 2);
-                Canvas.SetTop(textBlock, centerY + (radius + 25) * Math.Sin(angle) - textBlock.ActualHeight / 2);
-
-                graphicCanvas.Children.Add(axis);
-                graphicCanvas.Children.Add(textBlock);
+                MessageBox.Show("No se ha seleccionado ningun ejercicio para modificar");
             }
         }
 
-        private void DrawGraph(DateTime date, int flag)
+        private void ConfirmNewEx_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (exercisesList.Count == 0) return;
+            String name, description, muscleName;
+            Exercises ex;
 
-            double centerX = graphicCanvas.Width / 2;
-            double centerY = graphicCanvas.Height / 2;
-            double radius = Math.Min(centerX, centerY) - 30;
-            Point point;
-            PointCollection points = new PointCollection();
-            Ellipse ellipse;
-            Polygon polygon;
-
-            string[] musclegroups = { "Piernas", "Espalda", "Core", "Brazos", "Pecho" };
-
-            if (date.Equals(null) || flag == 0) date = DateTime.Today;
-
-            var totalRepsPerMuscleGroup = exercisesList
-                .Where(ex => ex.ListExecution.Any(exec => exec.Date.Date == date.Date))
-                .GroupBy(x => x.MuscleGroup)
-                .Select(group => new
-                {
-                    MuscleGroup = group.Key,
-                    TotalReps = group
-                        .SelectMany(x => x.ListExecution)
-                        .Where(exec => exec.Date.Date == date.Date)
-                        .Sum(exec => exec.Reps)
-                }).ToList();
-
-            double maxReps = totalRepsPerMuscleGroup.Any() ? Math.Min(100, totalRepsPerMuscleGroup.Max(x => x.TotalReps)) : 0;
-            
-            for (int i = 0; i < musclegroups.Length; i++)
+            if(isModify == false)
             {
-                double angle = (5 + i * 2 * Math.PI) / musclegroups.Length;
+                name = nameExercise_TextBox.Text;
+                description = descriptionExercise_TextBox.Text;
+                muscleName = MuscleNameComboBox.Text;
 
-                var muscleReps = totalRepsPerMuscleGroup.FirstOrDefault(group => group.MuscleGroup == musclegroups[i]);
-                double reps = muscleReps != null ? muscleReps.TotalReps : 0;
-                double radius2 = ((reps / 100 ) * radius);
+                ex = new Exercises(name, description, muscleName);
+                exercisesList.Add(ex);
 
-                double x = (centerX + radius2 * Math.Cos(angle));
-                double y = (centerY + radius2 * Math.Sin(angle));
-                point = new Point(x,y);
-                points.Add(point);
-                ellipse = new Ellipse
-                {
-                    Width = 5,
-                    Height = 5,
-                    Fill = Brushes.Red
-                };
-                Canvas.SetLeft(ellipse, x - (ellipse.Width / 2));
-                Canvas.SetTop(ellipse, y - (ellipse.Height / 2));
+                nameExercise_TextBox.Text = "";
+                descriptionExercise_TextBox.Text = "";
+                MuscleNameComboBox.SelectedValue = null;
+                AddExercise_Tab.Visibility = Visibility.Collapsed;
 
-                ToolTip tooltip = new ToolTip()
-                {
-                    Content = $"Reps: {(muscleReps?.TotalReps ?? 0)}"
-                };
-                ellipse.ToolTip = tooltip;
-                graphicCanvas.Children.Add(ellipse);
+                Tab_Exercises.Focus();
+
+                Delete_Button.IsEnabled = true;
+                Modify_Button.IsEnabled = true;
             }
-
-            polygon = new Polygon
+            else
             {
-                Points = new PointCollection(points),
-                Stroke = Brushes.DarkBlue,
-                StrokeThickness = 2,
-                //Fill = Brushes.LightBlue
-                Fill = new SolidColorBrush(Color.FromArgb(100, 173, 216, 230))
-            };
-            graphicCanvas.Children.Add(polygon);
+                name = nameExercise_TextBox.Text;
+                description = descriptionExercise_TextBox.Text;
+                muscleName = MuscleNameComboBox.Text;
+                ex = (Exercises)ExercisesTable.SelectedItem;
+                ex.Name = name;
+                ex.Description = description;
+                ex.MuscleGroup = muscleName;
+
+                nameExercise_TextBox.Text = "";
+                descriptionExercise_TextBox.Text = "";
+                MuscleNameComboBox.SelectedValue = null;
+                AddExercise_Tab.Visibility = Visibility.Collapsed;
+
+                Tab_Exercises.Focus();
+            }
         }
 
-
-        private void PrevDay_Click(object sender, RoutedEventArgs e)
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
         {
-            
-            DateTime date = DateTime.Today.AddDays(cont-1);
-            cont -= 1;
+            nameExercise_TextBox.Text = "";
+            descriptionExercise_TextBox.Text = "";
+            MuscleNameComboBox.SelectedValue = null;
+            AddExercise_Tab.Visibility = Visibility.Collapsed;
 
-            DrawGraph(date, -1);
+            Tab_Exercises.Focus();
         }
 
-        private void Today_Click(object sender, RoutedEventArgs e)
+        private void MuscleNameComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DateTime date = DateTime.Today;
-            DrawGraph(date, 0);
-        }
-
-        private void PostDay_Click(object sender, RoutedEventArgs e)
-        {
-            DateTime date = DateTime.Today.AddDays(cont + 1);
-            cont += 1;
-
-            DrawGraph(date, 1);
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
+            ConfirmNewEx_Button.IsEnabled = true;
         }
     }
 }

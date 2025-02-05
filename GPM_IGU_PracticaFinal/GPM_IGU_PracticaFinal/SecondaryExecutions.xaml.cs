@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,51 +21,70 @@ namespace GPM_IGU_PracticaFinal
     /// <summary>
     /// Lógica de interacción para SecondaryExecutions.xaml
     /// </summary>
-    //public class SelectionExChangedEventArgs : EventArgs
-    //{
-    //    public Exercises exer { get; set; }
-    //    public SelectionExChangedEventArgs(Exercises exercises)
-    //    {
-    //        exercises = exer;
-    //    }
-    //}
 
-    //private MainWindow mainW;
-    //private ExerciseSelection exerciseSelection;
-
+    public class ExecutionDateChangedEventArgs : EventArgs
+    {
+        public DateTime date { get; }
+        public ExecutionDateChangedEventArgs(DateTime selectedDate)
+        {
+            date = selectedDate;
+        }
+    }
     public partial class SecondaryExecutions : Window
     {
-        //public event EventHandler<SelectionChangedEventArgs> SelectionChanged;
+        public event EventHandler<ExecutionDateChangedEventArgs> OnExecutionDataSelected;
         Exercises exercise;
+
+        bool isModify = false;
+
         public SecondaryExecutions(Exercises exercises)
         {
             InitializeComponent();
             exercise = exercises;
             TableExecutions.ItemsSource = exercise.ListExecution;
-            
-            if(exercise.ListExecution.Count > 0)
+
+            if (exercise.ListExecution.Count > 0)
             {
                 Delete_Button.IsEnabled = true;
                 Modify_Button.IsEnabled = true;
             }
 
+            scroll.SizeChanged += Scroll_SizeChanged;
+
             DrawGraph();
             DrawAxis();
         }
 
+        //Scroll
+        private void Scroll_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            graphicCanvas.Width = scroll.ActualWidth;
+            graphicCanvas.Height = scroll.ActualHeight;
+
+            graphicCanvas.Children.Clear();
+            DrawAxis();
+            DrawGraph();
+        }
+
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
+            Tab_ExecutionForm.Visibility = Visibility.Visible;
             Tab_ExecutionForm.Focus();
-            ExerciseName_TextBox.Text = exercise.Name;
-            Delete_Button.IsEnabled = true;
-            Modify_Button.IsEnabled = true;
+            Acept_FormExec_Button.IsEnabled = false;
         }
 
         private void Delete_Button_Click(object sender, RoutedEventArgs e)
         {
-            if(TableExecutions.SelectedItem != null)
+            if (TableExecutions.SelectedItem != null)
             {
                 exercise.ListExecution.Remove((Executions)TableExecutions.SelectedItem);
+                if (exercise.ListExecution.Count == 0)
+                {
+                    Delete_Button.IsEnabled = false;
+                    Modify_Button.IsEnabled = false;
+                    Acept_FormExec_Button.IsEnabled = false;
+                    exercise.ListExecution.Clear();
+                }
             }
             exercise.ReorderDate();
             TableExecutions.ItemsSource = exercise.ListExecution;
@@ -77,43 +97,96 @@ namespace GPM_IGU_PracticaFinal
         {
             if (TableExecutions.SelectedItem != null)
             {
-                
+                Tab_ExecutionForm.Visibility = Visibility.Visible;
                 Executions ex = (Executions)TableExecutions.SelectedItem;
                 repsExecution_TextBox.Text = ex.Reps.ToString();
                 weightExecution_TextBox.Text = ex.Weight.ToString();
                 dateExecution_TextBox.Text = ex.Date.ToString("dd/MM/yyyy");
                 calend.SelectedDate = ex.Date;
 
-                Tab_ExecutionForm.Focus();
+                Acept_FormExec_Button.IsEnabled = true;
 
+                Tab_ExecutionForm.Focus();
+                isModify = true;
             }
         }
 
-        private void Add_4Exec_Button_Click(object sender, RoutedEventArgs e)
+        private void calend_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
-            Executions ex;
-
-            int reps = 0, weight = 0;
-            Random rand = new Random();
-            DateTime date = new DateTime(1999, 1, 1);
-            int range;
-
-            for (int i = 0; i < 4; i++)
+            dateExecution_TextBox.Text = calend.SelectedDate.Value.ToString("dd/MM/yyyy");
+            Acept_FormExec_Button.IsEnabled = true;
+        }
+        private void Acept_FormExec_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (isModify == false)
             {
-                reps = rand.Next(1, 30);
-                weight = rand.Next(1, 200);
-                range = (DateTime.Today - date).Days;
-                date = date.AddDays(rand.Next(range));
-                ex = new Executions(reps, weight, date);
-                exercise.ListExecution.Add(ex);
-            }
+                if (calend.SelectedDate != null && repsExecution_TextBox.Text != null && weightExecution_TextBox.Text != null)
+                {
+                    int reps = int.Parse(repsExecution_TextBox.Text);
+                    double weight = double.Parse(weightExecution_TextBox.Text);
+                    DateTime date = calend.SelectedDate.Value;
 
-            exercise.ReorderDate();
-            TableExecutions.ItemsSource = exercise.ListExecution;
-            DrawGraph();
-            DrawAxis();
-            Delete_Button.IsEnabled = true;
-            Modify_Button.IsEnabled = true;
+                    Delete_Button.IsEnabled = true;
+                    Modify_Button.IsEnabled = true;
+                    Executions ex = new Executions(reps, weight, date);
+                    exercise.ListExecution.Add(ex);
+                    exercise.ReorderDate();
+                    TableExecutions.ItemsSource = exercise.ListExecution;
+                    DrawGraph();
+                    DrawAxis();
+
+                    repsExecution_TextBox.Text = "";
+                    weightExecution_TextBox.Text = "";
+                    dateExecution_TextBox.Text = "";
+                    calend.SelectedDate = DateTime.Today;
+                    Tab_ExecutionForm.Visibility = Visibility.Collapsed;
+                    Tab_Executions.Focus();
+                    Delete_Button.IsEnabled = true;
+                    Modify_Button.IsEnabled = true;
+                }
+                else if (calend.SelectedDate == null)
+                {
+                    MessageBox.Show("No has seleccionado una fecha", "Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else if (repsExecution_TextBox.Text == null)
+                {
+                    MessageBox.Show("No has introducido las repeticiones", "Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else if (weightExecution_TextBox.Text == null)
+                {
+                    MessageBox.Show("No has introducido el peso", "Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            else
+            {
+                Executions ex = (Executions)TableExecutions.SelectedItem;
+                ex.Reps = int.Parse(repsExecution_TextBox.Text);
+                ex.Weight = double.Parse(weightExecution_TextBox.Text);
+                ex.Date = calend.SelectedDate.Value;
+
+                exercise.ReorderDate();
+                TableExecutions.ItemsSource = exercise.ListExecution;
+                DrawGraph();
+                DrawAxis();
+                isModify = false;
+
+                repsExecution_TextBox.Text = "";
+                weightExecution_TextBox.Text = "";
+                dateExecution_TextBox.Text = "";
+                calend.SelectedDate = DateTime.Today;
+                Tab_ExecutionForm.Visibility = Visibility.Collapsed;
+                Tab_Executions.Focus();
+            }
+        }
+
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Tab_ExecutionForm.Visibility = Visibility.Collapsed;
+            Tab_Executions.Focus();
+            repsExecution_TextBox.Text = "";
+            weightExecution_TextBox.Text = "";
+            dateExecution_TextBox.Text = "";
+            calend.SelectedDate = DateTime.Today;
         }
 
         private void DrawAxis()
@@ -122,22 +195,28 @@ namespace GPM_IGU_PracticaFinal
             if (exercise == null && exercise.ListExecution == null && exercise.ListExecution.Count < 0)
                 return;
 
-            //double width = graphicCanvas.ActualWidth;
-            //double height =  graphicCanvas.ActualHeight;
-            double width = 740;
-            double height = 340;
-            double maxHeight = 0; 
-            graphicCanvas.Children.Clear();
+            //double width = 740;
+            //double height = 340;
+            double width = graphicCanvas.Width;
+            double height = graphicCanvas.Height;
+            double maxHeight = 0;
+            double paddingTop = 20;
+            double paddingBotton = 50;
+            double paddingRight = 40;
 
-            //Maximos valores de repeticiones y peso, 30 y 150 respectivamente, para el eje Y y X
-            int maxReps = 30;
-            double maxWeight =  150;
+            double adjustHeight = height - paddingTop - paddingBotton;
+
+            int maxReps = 80;
+            double maxWeight = 125;
 
             int decrementR = maxReps / 10;
             double decrementW = maxWeight / 10;
+
+            //Left Axis
             for (int i = 0; i <= maxReps; i += decrementR)
             {
-                double y = height - (i * (height - 20) / maxReps);
+                //double y = height - (i * (height - 20) / maxReps);
+                double y = height - paddingBotton - (i * adjustHeight / maxReps);
                 Line axisY = new Line()
                 {
                     X1 = 20,
@@ -156,16 +235,28 @@ namespace GPM_IGU_PracticaFinal
                 Canvas.SetLeft(textBlock, 0);
                 Canvas.SetTop(textBlock, y - 10);
                 graphicCanvas.Children.Add(textBlock);
+                maxHeight = y;
             }
-            
+            TextBlock reps = new TextBlock()
+            {
+                Text = "Reps",
+                FontSize = 12
+            };
+            Canvas.SetLeft(reps, 5);
+            Canvas.SetTop(reps, adjustHeight + 40);
+            graphicCanvas.Children.Add(reps);
+
+            //Right Axis
+            double rightAxis = width - paddingRight;
             for (double i = 0; i <= maxWeight; i += decrementW)
             {
-                double y = height - (i * (height - 20) / maxWeight);
+                //double y = height - (i * (height - 20) / maxWeight);
+                double y = height - paddingBotton - (i * adjustHeight / maxWeight);
                 Line axisWeight = new Line()
                 {
-                    X1 = width - 30,
+                    X1 = rightAxis,
                     Y1 = y,
-                    X2 = width - 20,
+                    X2 = rightAxis + 10,
                     Y2 = y,
                     Stroke = Brushes.DarkBlue,
                     StrokeThickness = 1,
@@ -176,28 +267,19 @@ namespace GPM_IGU_PracticaFinal
                     Text = i.ToString(),
                     FontSize = 12
                 };
-                Canvas.SetLeft(textBlock2, width - 10);
+                Canvas.SetLeft(textBlock2, rightAxis + 10);
                 Canvas.SetTop(textBlock2, y - 10);
                 graphicCanvas.Children.Add(textBlock2);
                 maxHeight = y;
             }
-
-            TextBlock reps = new TextBlock()
-            {
-                Text = "Reps",
-                FontSize = 12
-            };
-            Canvas.SetLeft(reps, 0);
-            Canvas.SetTop(reps, height + 15);
-            graphicCanvas.Children.Add(reps);
 
             TextBlock Weight = new TextBlock()
             {
                 Text = "Peso(kg)",
                 FontSize = 12
             };
-            Canvas.SetLeft(Weight, width - 10);
-            Canvas.SetTop(Weight, height + 15);
+            Canvas.SetLeft(Weight, rightAxis - 10);
+            Canvas.SetTop(Weight, adjustHeight + 40);
             graphicCanvas.Children.Add(Weight);
 
             DrawGraph();
@@ -206,20 +288,25 @@ namespace GPM_IGU_PracticaFinal
         private void DrawGraph()
         {
             double widthRect = 20;
-            double distancePol = 60;
             double groupDistance = 40;
-
-            double maxCanvasHeigth = 340;
-            //double maxCanvasHeigth = graphicCanvas.ActualHeight;
-
-            double maxWeight = 150;
-
-            int maxReps = 30;
             double currentX = 60;
+            double maxCanvasHeigth = graphicCanvas.Height;
+
+            //Establecer "un margen" para que no se vea tan pegado a los bordes
+            double paddingTop = 20;
+            double paddingBotton = 50;
+            double adjustHeight = maxCanvasHeigth - paddingTop - paddingBotton;
+            if (adjustHeight < 0)
+            {
+                adjustHeight = 0;
+            }
+
+            double maxWeight = 125;
+            int maxReps = 80;
 
             if (exercise == null && exercise.ListExecution == null && exercise.ListExecution.Count < 0)
                 return;
-            
+
             var groupExecutions = exercise.ListExecution
                         .GroupBy(x => x.Date)
                         .OrderBy(x => x.Key);
@@ -233,30 +320,33 @@ namespace GPM_IGU_PracticaFinal
 
             foreach (var group in groupExecutions)
             {
-
                 TextBlock textBlock = new TextBlock
                 {
                     Text = group.Key.ToString("dd/MM/yyyy"),
                     FontSize = 12,
                     TextAlignment = TextAlignment.Center,
+
                 };
                 Canvas.SetLeft(textBlock, currentX + (group.Count() * widthRect) / 2 - 10);
-
-                Canvas.SetTop(textBlock, maxCanvasHeigth + 10);
+                Canvas.SetTop(textBlock, maxCanvasHeigth - paddingBotton + 10);
                 graphicCanvas.Children.Add(textBlock);
 
                 foreach (Executions ex in group)
                 {
                     if (ex != null && ex.Reps > 0)
                     {
+                        ex.Reps = ex.Reps >= maxReps ? maxReps : ex.Reps;
+                        ex.Weight = ex.Weight >= maxWeight ? maxWeight : ex.Weight;
+
                         Rectangle r = new Rectangle();
                         r.Width = 20;
-                        r.Height = ex.Reps * maxCanvasHeigth / maxReps;
+                        //r.Height = ex.Reps * (maxCanvasHeigth - 20) / maxReps;
+                        r.Height = Math.Max(ex.Reps * adjustHeight / maxReps, 0);
+
                         r.Fill = Brushes.Red;
+                        r.Stroke = Brushes.Black;
                         Canvas.SetLeft(r, currentX);
-
-                        Canvas.SetTop(r, maxCanvasHeigth - r.Height);
-
+                        Canvas.SetTop(r, maxCanvasHeigth - paddingBotton - r.Height);
                         ToolTip tooltip = new ToolTip()
                         {
                             Content = $"Reps: {ex.Reps}"
@@ -265,7 +355,8 @@ namespace GPM_IGU_PracticaFinal
 
                         graphicCanvas.Children.Add(r);
 
-                        double y = maxCanvasHeigth - (ex.Weight * maxCanvasHeigth / maxWeight);
+                        //double y = maxCanvasHeigth - (ex.Weight * (maxCanvasHeigth - 20) / maxWeight);
+                        double y = maxCanvasHeigth - paddingBotton - (ex.Weight * adjustHeight / maxWeight);
 
                         Ellipse elip = new Ellipse()
                         {
@@ -288,68 +379,41 @@ namespace GPM_IGU_PracticaFinal
                     }
                     currentX += widthRect;
                 }
-
                 currentX += groupDistance;
             }
-
             graphicCanvas.Children.Add(pol);
-
         }
 
-        private void calend_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
+        //La llamamos desde la ventana principal para actualizar los datos de esta ventana, secondaryExecutions
+        public void UpdateData(Exercises ex)
         {
-            dateExecution_TextBox.Text = calend.SelectedDate.Value.ToString("dd/MM/yyyy");
-        }
-        private void Acept_FormExec_Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (exercise != null)
+            this.exercise = ex;
+            TableExecutions.ItemsSource = exercise.ListExecution;
+
+            if (exercise.ListExecution.Count > 0)
             {
-                ExerciseName_TextBox.Text = exercise.Name;
-                if(calend.SelectedDate != null && repsExecution_TextBox.Text != null && weightExecution_TextBox.Text != null)
-                {
-                    Acept_FormExec_Button.IsEnabled = true;
-                    Delete_Button.IsEnabled = true;
-                    Modify_Button.IsEnabled = true;
-                    Executions ex = new Executions(int.Parse(repsExecution_TextBox.Text), int.Parse(weightExecution_TextBox.Text), calend.SelectedDate.Value);
-                    exercise.ListExecution.Add(ex);
-                    exercise.ReorderDate();
-                    TableExecutions.ItemsSource = exercise.ListExecution;
-                    DrawGraph();
-                    DrawAxis();
-                } else if (calend.SelectedDate == null)
-                {
-                    MessageBox.Show("No has seleccionado una fecha","Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else if (repsExecution_TextBox.Text == null)
-                {
-                    MessageBox.Show("No has introducido las repeticiones", "Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else if (weightExecution_TextBox.Text == null)
-                {
-                    MessageBox.Show("No has introducido el peso", "Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                Delete_Button.IsEnabled = true;
+                Modify_Button.IsEnabled = true;
             }
             else
             {
-                ExerciseName_TextBox.Text = "No hay ejercicio seleccionado";
-                MessageBox.Show("No has seleccionado un ejercicio", "Save error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Delete_Button.IsEnabled = false;
+                Modify_Button.IsEnabled = false;
             }
 
+            graphicCanvas.Children.Clear();
+            DrawGraph();
+            DrawAxis();
         }
 
-        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
+        private void TableExecutions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Tab_Executions.Focus();
-            repsExecution_TextBox.Text = "";
-            weightExecution_TextBox.Text = "";
-            dateExecution_TextBox.Text = "";
-            calend.SelectedDate = DateTime.Today;
+            if (TableExecutions.SelectedItem != null)
+            {
+                DateTime selectedDate = ((Executions)TableExecutions.SelectedItem).Date;
+                OnExecutionDataSelected?.Invoke(this, new ExecutionDateChangedEventArgs(selectedDate));
+            }
         }
-
-        private void dateExecution_TextBox_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            calend.SelectedDate = DateTime.Parse(dateExecution_TextBox.Text);
-        }
-
     }
+
 }
